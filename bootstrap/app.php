@@ -3,8 +3,6 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
-
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -15,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Sanctum middleware for handling SPA / API auth
         $middleware->group('web', [
-            EnsureFrontendRequestsAreStateful::class,
+            // EnsureFrontendRequestsAreStateful::class, // Removed Sanctum middleware
         ]);
 
         // CSRF protection removed from API routes except login

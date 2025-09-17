@@ -13,37 +13,31 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 
-// Authentication routes
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
+// Public API routes
+// Products
+Route::apiResource('products', ProductController::class);
 
-// Protected routes (require authentication)
-Route::middleware('auth:sanctum')->group(function () {
-    // Products
-    Route::apiResource('products', ProductController::class);
+// Sales
+Route::apiResource('sales', SaleController::class);
 
-    // Sales
-    Route::apiResource('sales', SaleController::class);
+// Customers
+Route::apiResource('customers', CustomerController::class);
 
-    // Customers
-    Route::apiResource('customers', CustomerController::class);
+// Channels
+Route::apiResource('channels', ChannelController::class);
 
-    // Channels
-    Route::apiResource('channels', ChannelController::class);
+// Admins
+Route::apiResource('admins', AdminController::class);
 
-    // Admins
-    Route::apiResource('admins', AdminController::class);
+// Payments
+Route::apiResource('payments', PaymentController::class);
 
-    // Payments
-    Route::apiResource('payments', PaymentController::class);
+// Dashboard
+Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
 
-    // Dashboard
-    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
-    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
-
-    // Reports
-    Route::get('/reports/sales', [ReportController::class, 'salesReport']);
-    Route::get('/reports/customers', [ReportController::class, 'customerReport']);
-    Route::get('/reports/products', [ReportController::class, 'productReport']);
-    Route::get('/reports/revenue', [ReportController::class, 'revenueReport']);
-});
+// Reports
+Route::get('/reports/sales', [ReportController::class, 'salesReport']);
+Route::get('/reports/customers', [ReportController::class, 'customerReport']);
+Route::get('/reports/products', [ReportController::class, 'productReport']);
+Route::get('/reports/revenue', [ReportController::class, 'revenueReport']);
