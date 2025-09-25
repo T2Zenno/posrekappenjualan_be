@@ -4,41 +4,45 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
     public function index()
     {
-        return response()->json(Admin::all());
+        return response()->json(Admin::where('user_id', Auth::id())->get());
     }
 
     public function store(Request $request)
     {
+        $user = $request->user();
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:admins,username',
+            'username' => ['nullable', 'string', 'max:255', Rule::unique('admins')->where('user_id', $user->id)],
             'note' => 'nullable|string',
         ]);
 
-        $admin = Admin::create($validated);
+        $admin = $user->admins()->create($validated);
 
         return response()->json($admin, 201);
     }
 
     public function show($id)
     {
-        $admin = Admin::findOrFail($id);
+        $admin = Auth::user()->admins()->findOrFail($id);
 
         return response()->json($admin->load('sales'));
     }
 
     public function update(Request $request, $id)
     {
-        $admin = Admin::findOrFail($id);
+        $user = $request->user();
+        $admin = $user->admins()->findOrFail($id);
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'username' => 'sometimes|required|string|max:255|unique:admins,username,' . $admin->id,
+            'username' => ['sometimes', 'nullable', 'string', 'max:255', Rule::unique('admins')->where('user_id', $user->id)->ignore($admin->id)],
             'note' => 'nullable|string',
         ]);
 
@@ -49,7 +53,7 @@ class AdminController extends Controller
 
     public function destroy($id)
     {
-        $admin = Admin::findOrFail($id);
+        $admin = Auth::user()->admins()->findOrFail($id);
 
         $admin->delete();
 

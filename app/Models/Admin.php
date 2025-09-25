@@ -10,10 +10,16 @@ class Admin extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'name',
         'username',
         'note',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function sales()
     {

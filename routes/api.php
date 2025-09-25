@@ -14,30 +14,48 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 
 // Public API routes
-// Products
-Route::apiResource('products', ProductController::class);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
-// Sales
-Route::apiResource('sales', SaleController::class);
 
-// Customers
-Route::apiResource('customers', CustomerController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    // Products
+    Route::apiResource('products', ProductController::class);
 
-// Channels
-Route::apiResource('channels', ChannelController::class);
+    // Sales
+    Route::apiResource('sales', SaleController::class);
 
-// Admins
-Route::apiResource('admins', AdminController::class);
+    // Customers
+    Route::apiResource('customers', CustomerController::class);
 
-// Payments
-Route::apiResource('payments', PaymentController::class);
+    // Channels
+    Route::apiResource('channels', ChannelController::class);
 
-// Dashboard
-Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
-Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+    // Admins
+    Route::apiResource('admins', AdminController::class);
 
-// Reports
-Route::get('/reports/sales', [ReportController::class, 'salesReport']);
-Route::get('/reports/customers', [ReportController::class, 'customerReport']);
-Route::get('/reports/products', [ReportController::class, 'productReport']);
-Route::get('/reports/revenue', [ReportController::class, 'revenueReport']);
+    // Payments
+    Route::apiResource('payments', PaymentController::class);
+
+    // Dashboard
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+
+    // Reports
+    Route::get('/reports/sales', [ReportController::class, 'salesReport']);
+    Route::get('/reports/customers', [ReportController::class, 'customerReport']);
+    Route::get('/reports/products', [ReportController::class, 'productReport']);
+    Route::get('/reports/revenue', [ReportController::class, 'revenueReport']);
+
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
+
+Route::middleware(['auth:api'])->group(function () {
+    Route::get('/user', fn(Request $r) => $r->user());
+    
+    // dst…
+});

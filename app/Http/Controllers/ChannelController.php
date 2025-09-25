@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Channel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ChannelController extends Controller
 {
     public function index()
     {
-        return response()->json(Channel::all());
+        return response()->json(Channel::where('user_id', Auth::id())->get());
     }
 
     public function store(Request $request)
@@ -20,21 +21,21 @@ class ChannelController extends Controller
             'url' => 'nullable|string',
         ]);
 
-        $channel = Channel::create($validated);
+        $channel = $request->user()->channels()->create($validated);
 
         return response()->json($channel, 201);
     }
 
     public function show($id)
     {
-        $channel = Channel::findOrFail($id);
+        $channel = Auth::user()->channels()->findOrFail($id);
 
         return response()->json($channel->load('sales'));
     }
 
     public function update(Request $request, $id)
     {
-        $channel = Channel::findOrFail($id);
+        $channel = Auth::user()->channels()->findOrFail($id);
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
@@ -49,7 +50,7 @@ class ChannelController extends Controller
 
     public function destroy($id)
     {
-        $channel = Channel::findOrFail($id);
+        $channel = Auth::user()->channels()->findOrFail($id);
 
         $channel->delete();
 

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Sanctum middleware for handling SPA / API auth
         $middleware->group('web', [
             // EnsureFrontendRequestsAreStateful::class, // Removed Sanctum middleware
+            \Illuminate\Http\Middleware\HandleCors::class,
         ]);
 
         // CSRF protection removed from API routes except login

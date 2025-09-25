@@ -6,6 +6,7 @@ use App\Models\Sale;
 use App\Models\Product;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
@@ -15,7 +16,7 @@ class ReportController extends Controller
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
 
-        $query = Sale::with(['customer', 'product', 'channel', 'payment', 'admin']);
+        $query = Auth::user()->sales()->with(['customer', 'product', 'channel', 'payment', 'admin']);
 
         if ($startDate && $endDate) {
             $query->whereBetween('date', [$startDate, $endDate]);
@@ -37,7 +38,7 @@ class ReportController extends Controller
 
     public function customerReport()
     {
-        $customers = Customer::withCount('sales')
+        $customers = Auth::user()->customers()->withCount('sales')
             ->with(['sales' => function ($query) {
                 $query->select('customer_id', 'price');
             }])
@@ -52,7 +53,7 @@ class ReportController extends Controller
 
     public function productReport()
     {
-        $products = Product::withCount('sales')
+        $products = Auth::user()->products()->withCount('sales')
             ->with(['sales' => function ($query) {
                 $query->select('product_id', 'price');
             }])
@@ -68,6 +69,7 @@ class ReportController extends Controller
     public function revenueReport(Request $request)
     {
         $period = $request->get('period', 'monthly'); // daily, weekly, monthly, yearly
+        $user = Auth::user();
 
         $groupBy = match ($period) {
             'daily' => DB::raw('DATE(date) as period'),
@@ -77,7 +79,7 @@ class ReportController extends Controller
             default => DB::raw('DATE_FORMAT(date, "%Y-%m") as period'),
         };
 
-        $revenue = Sale::select($groupBy, DB::raw('SUM(price) as revenue'), DB::raw('COUNT(*) as sales_count'))
+        $revenue = $user->sales()->select($groupBy, DB::raw('SUM(price) as revenue'), DB::raw('COUNT(*) as sales_count'))
             ->groupBy('period')
             ->orderBy('period', 'desc')
             ->get();

@@ -10,6 +10,7 @@ class Sale extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'customer_id',
         'product_id',
         'channel_id',
@@ -27,6 +28,11 @@ class Sale extends Model
         'date' => 'date',
         'ship_date' => 'date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function customer()
     {
