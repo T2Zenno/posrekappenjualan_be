@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -11,16 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Sanctum middleware for handling SPA / API auth
-        $middleware->group('web', [
-            // EnsureFrontendRequestsAreStateful::class, // Removed Sanctum middleware
-            \Illuminate\Http\Middleware\HandleCors::class,
-        ]);
-
-        // CSRF protection removed from API routes except login
-        $middleware->group('api', [
-            // EnsureFrontendRequestsAreStateful::class, // Removed for all API routes
-        ]);
+          $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
